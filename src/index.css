@@ -1,0 +1,139 @@
+/* Premium Dark/Modern UI Theme - R2Portal */
+:root {
+  /* Elegant Dark Palette (Cloudflare-inspired with HSL) */
+  --bg-primary: #0a0b0e;
+  --bg-secondary: #12141c;
+  --bg-tertiary: #191c26;
+  --bg-glass: rgba(18, 20, 28, 0.7);
+  --bg-glass-hover: rgba(25, 28, 38, 0.85);
+  
+  /* Brand Accents */
+  --accent-orange: #f38020;
+  --accent-orange-glow: rgba(243, 128, 32, 0.15);
+  --accent-blue: #1f73b7;
+  --accent-teal: #14b8a6;
+  --accent-purple: #a855f7;
+  
+  /* Borders and Gradients */
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-hover: rgba(243, 128, 32, 0.4);
+  --glow-color: rgba(243, 128, 32, 0.2);
+  
+  /* Text Colors */
+  --text-primary: #f3f4f6;
+  --text-secondary: #9ca3af;
+  --text-muted: #6b7280;
+  --text-inverse: #0a0b0e;
+
+  /* Typography */
+  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  font-family: var(--font-sans);
+  color-scheme: dark;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  background: radial-gradient(circle at 50% 0%, rgba(243, 128, 32, 0.08) 0%, rgba(10, 11, 14, 1) 70%), var(--bg-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 15px rgba(243, 128, 32, 0.15); }
+  50% { box-shadow: 0 0 25px rgba(243, 128, 32, 0.35); }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+@keyframes progress-stripe {
+  from { background-position: 1rem 0; }
+  to { background-position: 0 0; }
+}
+
+/* Container */
+.container {
+  max-width: 1280px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* Glassmorphism Styles */
+.glass-panel {
+  background: var(--bg-glass);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.glass-panel:hover {
+  border-color: rgba(255, 255, 255, 0.12);
+  background: var(--bg-glass-hover);
+}
+
+/* Main Layout Grid */
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 2rem;
+  margin-top: 2rem;
+  margin-bottom: 3rem;
+  animation: fadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@media (max-width: 1024px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
+}

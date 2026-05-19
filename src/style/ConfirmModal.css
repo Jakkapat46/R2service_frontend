@@ -1,0 +1,104 @@
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 11, 14, 0.7);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 99999;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+.modal-content-box {
+  width: fit-content;
+  min-width: 320px;
+  max-width: 90vw;
+  padding: clamp(20px, 5vw, 32px);
+  border-color: rgba(243, 128, 32, 0.25) !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), 0 0 30px rgba(243, 128, 32, 0.08) !important;
+  animation: modalScaleUp 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  background: rgba(15, 23, 42, 0.85) !important;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.modal-header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.modal-header-row h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.modal-warning-icon {
+  color: var(--accent-orange);
+  filter: drop-shadow(0 0 6px rgba(243, 128, 32, 0.4));
+}
+
+.modal-message {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin-bottom: 20px;
+}
+
+.modal-actions-row {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-btn-cancel {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.modal-btn-cancel:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-primary);
+}
+
+.modal-btn-confirm {
+  background: var(--accent-orange);
+  border: 1px solid var(--accent-orange);
+  color: #fff;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 0 12px rgba(243, 128, 32, 0.25);
+}
+
+.modal-btn-confirm:hover {
+  background: #fa9f42;
+  border-color: #fa9f42;
+  transform: translateY(-1px);
+  box-shadow: 0 0 16px rgba(243, 128, 32, 0.35);
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes modalScaleUp {
+  from { transform: scale(0.92); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
