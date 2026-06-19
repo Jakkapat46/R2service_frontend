@@ -28,6 +28,9 @@ export const R2UploadManager: React.FC<R2UploadManagerProps> = ({
   const [isConnected, setIsConnected] = useState(false);
   const [selectedFileIds, setSelectedFileIds] = useState<string[]>([]);
   const [isSelectionMode, setIsSelectionMode] = useState<boolean>(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
+
   const [modalConfig, setModalConfig] = useState<{
     isOpen: boolean;
     title: string;
@@ -212,7 +215,7 @@ export const R2UploadManager: React.FC<R2UploadManagerProps> = ({
   };
 
   const handleToggleSelectAll = () => {
-    const allFilteredIds = filteredFiles.map((f) => f.id).filter(Boolean) as string[];
+    const allFilteredIds = paginatedFiles.map((f) => f.id).filter(Boolean) as string[];
     const allSelected = allFilteredIds.every((id) => selectedFileIds.includes(id));
     
     if (allSelected) {
@@ -283,6 +286,17 @@ export const R2UploadManager: React.FC<R2UploadManagerProps> = ({
     const cat = getFileCategory(fileKey, file.contentType);
     return matchesSearch && cat === activeCategory;
   });
+
+  // Reset pagination when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchQuery, activeCategory]);
+
+  const totalPages = Math.ceil(filteredFiles.length / itemsPerPage);
+  const paginatedFiles = filteredFiles.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
 
   return (
     <div className="dashboard-grid container">
@@ -499,9 +513,9 @@ export const R2UploadManager: React.FC<R2UploadManagerProps> = ({
 
         {/* File Cards Grid */}
         <div className="file-grid-container mt-20">
-          {filteredFiles.length > 0 ? (
+          {paginatedFiles.length > 0 ? (
             <div className="file-grid">
-              {filteredFiles.map((file) => (
+              {paginatedFiles.map((file) => (
                 <FileCard 
                   key={file.key} 
                   file={file} 
@@ -520,6 +534,29 @@ export const R2UploadManager: React.FC<R2UploadManagerProps> = ({
             </div>
           )}
         </div>
+
+        {/* Pagination Controls */}
+        {totalPages > 1 && (
+          <div className="pagination-container mt-20">
+            <button 
+              className="category-btn pagination-btn" 
+              onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <div className="pagination-info">
+              Page <span className="highlight-orange">{currentPage}</span> of {totalPages}
+            </div>
+            <button 
+              className="category-btn pagination-btn" 
+              onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Custom Glassmorphic Confirmation Modal */}

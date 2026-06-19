@@ -27,7 +27,7 @@ export const uploadService = {
    * Fetch uploaded files list and map them to frontend R2File[] interface
    */
   getFiles: async (): Promise<R2File[]> => {
-    const response = await api.get('/uploads');
+    const response = await api.get('/uploads?limit=1000');
     const backendFiles = response.data?.data || [];
     return backendFiles.map((item: any) => ({
       id: item.id,
