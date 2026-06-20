@@ -256,6 +256,21 @@ export const R2UploadManager: React.FC<R2UploadManagerProps> = ({
     });
   };
 
+  const handleCopySelectedLinks = () => {
+    // Preserve selection order by mapping over selectedFileIds
+    const selectedUrls = selectedFileIds
+      .map((id) => files.find((f) => f.id === id)?.url)
+      .filter(Boolean); // Remove any undefined in case file not found
+
+    const jsonString = JSON.stringify(selectedUrls, null, 2);
+    navigator.clipboard.writeText(jsonString)
+      .then(() => showToast(`Copied ${selectedUrls.length} links to clipboard!`, 'success'))
+      .catch((err) => {
+        console.error('Failed to copy', err);
+        showToast('Failed to copy to clipboard', 'error');
+      });
+  };
+
   // Categorization Logic
   const getFileCategory = (filename: string | undefined | null, mime: string | undefined | null): string => {
     const name = filename || '';
@@ -502,12 +517,21 @@ export const R2UploadManager: React.FC<R2UploadManagerProps> = ({
           </div>
 
           {isSelectionMode && selectedFileIds.length > 0 && (
-            <button 
-              className="category-btn active bulk-delete-btn"
-              onClick={handleBulkDelete}
-            >
-              Delete Selected ({selectedFileIds.length})
-            </button>
+            <div style={{ display: 'flex', gap: '10px' }}>
+              <button 
+                className="category-btn active"
+                style={{ background: 'var(--accent-orange)', color: '#fff', fontWeight: 'bold', border: 'none' }}
+                onClick={handleCopySelectedLinks}
+              >
+                Copy {selectedFileIds.length} Links
+              </button>
+              <button 
+                className="category-btn active bulk-delete-btn"
+                onClick={handleBulkDelete}
+              >
+                Delete Selected ({selectedFileIds.length})
+              </button>
+            </div>
           )}
         </div>
 
@@ -515,16 +539,20 @@ export const R2UploadManager: React.FC<R2UploadManagerProps> = ({
         <div className="file-grid-container mt-20">
           {paginatedFiles.length > 0 ? (
             <div className="file-grid">
-              {paginatedFiles.map((file) => (
-                <FileCard 
-                  key={file.key} 
-                  file={file} 
-                  onDelete={handleDeleteFile} 
-                  isSelected={file.id ? selectedFileIds.includes(file.id) : false}
-                  onSelectToggle={() => file.id && handleToggleSelectFile(file.id)}
-                  isSelectionMode={isSelectionMode}
-                />
-              ))}
+              {paginatedFiles.map((file) => {
+                const selIndex = file.id ? selectedFileIds.indexOf(file.id) : -1;
+                return (
+                  <FileCard 
+                    key={file.key} 
+                    file={file} 
+                    onDelete={handleDeleteFile} 
+                    isSelected={selIndex !== -1}
+                    selectionIndex={selIndex !== -1 ? selIndex + 1 : null}
+                    onSelectToggle={() => file.id && handleToggleSelectFile(file.id)}
+                    isSelectionMode={isSelectionMode}
+                  />
+                );
+              })}
             </div>
           ) : (
             <div className="glass-panel empty-state">

@@ -11,6 +11,7 @@ interface FileCardProps {
   file: R2File;
   onDelete: (file: R2File) => void;
   isSelected?: boolean;
+  selectionIndex?: number | null;
   onSelectToggle?: () => void;
   isSelectionMode?: boolean;
 }
@@ -19,6 +20,7 @@ export const FileCard: React.FC<FileCardProps> = ({
   file, 
   onDelete,
   isSelected = false,
+  selectionIndex = null,
   onSelectToggle,
   isSelectionMode = false,
 }) => {
@@ -102,8 +104,15 @@ export const FileCard: React.FC<FileCardProps> = ({
             e.stopPropagation();
             if (onSelectToggle) onSelectToggle();
           }}
+          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
         >
-          {isSelected && <Check size={10} className="check-icon" />}
+          {isSelected && (
+            selectionIndex !== null ? (
+              <span style={{ fontSize: '11px', fontWeight: 'bold', color: 'white' }}>{selectionIndex}</span>
+            ) : (
+              <Check size={10} className="check-icon" />
+            )
+          )}
         </div>
       )}
 
