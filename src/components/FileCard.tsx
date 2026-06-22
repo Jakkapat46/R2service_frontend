@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import '../style/FileCard.css';
 import { 
   FileText, FileImage, FileVideo, FileCode, FileArchive, FileAudio, 
-  File, Copy, Check, ExternalLink, Download, Trash2, Calendar, HardDrive 
+  File, Copy, Check, ExternalLink, Download, Trash2, Calendar, HardDrive, RefreshCw
 } from 'lucide-react';
 
 import type { R2File } from '../types';
@@ -10,6 +10,7 @@ import type { R2File } from '../types';
 interface FileCardProps {
   file: R2File;
   onDelete: (file: R2File) => void;
+  onReplace?: (file: R2File, newFile: File) => void;
   isSelected?: boolean;
   selectionIndex?: number | null;
   onSelectToggle?: () => void;
@@ -19,12 +20,32 @@ interface FileCardProps {
 export const FileCard: React.FC<FileCardProps> = ({ 
   file, 
   onDelete,
+  onReplace,
   isSelected = false,
   selectionIndex = null,
   onSelectToggle,
   isSelectionMode = false,
 }) => {
   const [copied, setCopied] = useState(false);
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+  const handleReplaceClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile && onReplace) {
+      onReplace(file, selectedFile);
+    }
+    // reset input so same file could be selected again if needed
+    if (e.target) {
+      e.target.value = '';
+    }
+  };
 
   // Format File Size
   const formatSize = (bytes: number): string => {
@@ -192,6 +213,22 @@ export const FileCard: React.FC<FileCardProps> = ({
           >
             <Download size={14} />
           </a>
+          <button 
+            className="action-icon-btn replace-btn"
+            onClick={handleReplaceClick}
+            title="Replace file"
+            style={{ color: '#3b82f6' }}
+          >
+            <RefreshCw size={14} />
+          </button>
+          
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            style={{ display: 'none' }} 
+            onChange={handleFileChange} 
+          />
+
           <button 
             className="action-icon-btn delete-btn"
             onClick={(e) => {

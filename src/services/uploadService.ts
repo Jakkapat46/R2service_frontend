@@ -94,6 +94,61 @@ export const uploadService = {
   },
 
   /**
+   * Replace an existing file with a new one
+   * @param id The ID of the file to replace
+   * @param file The new file object
+   * @param onProgress Callback function reporting progress
+   */
+  replaceFile: async (
+    id: string,
+    file: File,
+    onProgress: (progress: number, speed: string) => void
+  ): Promise<R2File> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const startTime = Date.now();
+
+    const response = await api.put(`/uploads/${id}/replace`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+      onUploadProgress: (progressEvent) => {
+        if (progressEvent.total) {
+          const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          
+          const elapsedTime = (Date.now() - startTime) / 1000;
+          let speed = '0 KB/s';
+          if (elapsedTime > 0) {
+            const bytesPerSecond = progressEvent.loaded / elapsedTime;
+            if (bytesPerSecond > 1024 * 1024) {
+              speed = `${(bytesPerSecond / (1024 * 1024)).toFixed(1)} MB/s`;
+            } else {
+              speed = `${(bytesPerSecond / 1024).toFixed(0)} KB/s`;
+            }
+          }
+          
+          onProgress(progress, speed);
+        }
+      },
+    });
+
+    const replacedRecord = response.data?.data;
+    if (!replacedRecord) {
+      throw new Error('No replacement data returned from backend');
+    }
+
+    return {
+      id: replacedRecord.id,
+      key: replacedRecord.originalName,
+      size: replacedRecord.size,
+      lastModified: new Date(replacedRecord.createdAt),
+      contentType: replacedRecord.mimeType,
+      url: replacedRecord.publicUrl,
+    };
+  },
+
+  /**
    * Delete uploaded file by ID
    */
   deleteFile: async (id: string): Promise<void> => {

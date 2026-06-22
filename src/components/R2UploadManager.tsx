@@ -545,7 +545,65 @@ export const R2UploadManager: React.FC<R2UploadManagerProps> = ({
                   <FileCard 
                     key={file.key} 
                     file={file} 
-                    onDelete={handleDeleteFile} 
+                    onDelete={handleDeleteFile}
+                    onReplace={async (oldFile, newFile) => {
+                      if (!oldFile.id) return;
+                      
+                      const uploadId = Math.random().toString(36).substring(7);
+                      const newQueueItem: UploadingQueueItem = {
+                        id: uploadId,
+                        name: newFile.name,
+                        size: newFile.size,
+                        progress: 0,
+                        speed: 'Connecting...',
+                        status: 'uploading',
+                      };
+                
+                      setUploadingQueue((prev) => [newQueueItem, ...prev]);
+                
+                      try {
+                        const replacedFile = await uploadService.replaceFile(
+                          oldFile.id,
+                          newFile,
+                          (progress, speed) => {
+                            setUploadingQueue((prev) =>
+                              prev.map((item) =>
+                                item.id === uploadId ? { ...item, progress, speed } : item
+                              )
+                            );
+                          }
+                        );
+                
+                        setFiles((prev) => prev.map((f) => (f.id === oldFile.id ? replacedFile : f)));
+                        showToast(`Successfully replaced "${oldFile.key}"!`, 'success');
+                
+                        setUploadingQueue((prev) =>
+                          prev.map((item) =>
+                            item.id === uploadId
+                              ? { ...item, progress: 100, speed: 'Done', status: 'completed' as const }
+                              : item
+                          )
+                        );
+                
+                        setTimeout(() => {
+                          setUploadingQueue((prev) => prev.filter((item) => item.id !== uploadId));
+                        }, 3000);
+                      } catch (err: any) {
+                        console.error('Replacement failed:', err);
+                        setUploadingQueue((prev) =>
+                          prev.map((item) =>
+                            item.id === uploadId
+                              ? { ...item, speed: 'Failed', status: 'failed' as const }
+                              : item
+                          )
+                        );
+                        showToast(`Failed to replace file: ${err.response?.data?.message || err.message}`, 'error');
+                
+                        setTimeout(() => {
+                          setUploadingQueue((prev) => prev.filter((item) => item.id !== uploadId));
+                        }, 5000);
+                      }
+                    }}
                     isSelected={selIndex !== -1}
                     selectionIndex={selIndex !== -1 ? selIndex + 1 : null}
                     onSelectToggle={() => file.id && handleToggleSelectFile(file.id)}
